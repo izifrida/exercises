@@ -1,0 +1,10 @@
+{
+    "database": {
+        "username": "root",
+        "password": "",
+        "database": "exercise4",
+        "host": "localhost",
+        "dialect": "sqlite",
+        "storage": "./data/database.sqlite"
+    }
+}
