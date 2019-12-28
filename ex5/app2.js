@@ -12,7 +12,7 @@ app.set('view engine', 'pug');          //Use the 'Pug' template system
 // Determining the contents of the middleware stack
 app.use(logger('dev'));                         // Add an HTTP request recorder to the stack - every request will be logged in the console in the 'dev' format
 app.use(express.static(__dirname + '/public')); // Place the built-in middleware 'express.static' - static content (files .css, .js, .jpg, etc.) will be provided from the 'public' directory
- 
+
 // Route definitions
 app.get('/', function (req, res) {      // The first route
     // Exercise 12 point 15 (calculate and then print, the value x + y ).
@@ -21,6 +21,13 @@ app.get('/', function (req, res) {      // The first route
     // res.render('index', {pretty:true}); // Render the 'index' view in 'pretty' mode - the resulting HTML code will be indented - the 'pretty' option has the 'deprecated' status - in the future it will not be supported
     //res.render('index '); // Render the 'index' view; because the 'pretty' mode is, by default, turned off so the resulting HTML will be without indentation
 });
+
+// Exercise 13 point 4 (new route app.get('/add/:x/:y')).
+app.get('/add/:x/:y', function (req, res) {
+    const x = +req.params.x;
+    const y = +req.params.y;
+    res.render('index', { firstNumber: x, secondNumber: y, result: x + y })
+})
 
 // The application is to listen on port number 3000
 app.listen(3000, function () {
