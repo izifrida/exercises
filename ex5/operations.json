@@ -1,0 +1,24 @@
+{
+    "operations": [
+        {
+            "name": "add",
+            "arg1": 5,
+            "arg2": 10
+        },
+        {
+            "name": "subtract",
+            "arg1": "result",
+            "arg2": 5
+        },
+        {
+            "name": "multiply",
+            "arg1": 10,
+            "arg2": "result"
+        },
+        {
+            "name": "divide",
+            "arg1": "result",
+            "arg2": 2
+        }
+    ]
+}
