@@ -13,6 +13,7 @@ describe('GET /', function () {
                   .expect(200, done);
       });
 
+      // Task 13 point 5
       it('respond with 1 + 2 = 3 for variables values specified in the source code', function (done) {
             server
                   .get('/')

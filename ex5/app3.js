@@ -1,8 +1,4 @@
 // Task 14 (Handling complex data in JSON format). Point 1
-const fs = require('fs');
-
-const querystring = require('querystring'); // For  parsing URL query strings
-
 var express = require('express'),
     logger = require('morgan');
 var app = express();
