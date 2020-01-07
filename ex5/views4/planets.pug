@@ -1,0 +1,28 @@
+//- Task 14 (Handling complex data in JSON format). Point 1
+doctype html
+html
+    head
+        meta(charset='utf-8')
+        meta(name='viewport', content='width=device-width, initial-scale=1, shrink-to-fit=no')
+        link(href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', rel='stylesheet')
+        title Star Wars Planets
+    body(class="p-4")
+        div(class="d-flex justify-content-between pb-3")
+                h1 Star Wars Planets
+                a(href="/")
+                    button(class="btn btn-link") Back 
+    
+        div(class="list-group mb-2") 
+            each planet in planets
+                a(href='/planets/details?source='+planet.url class="list-group-item list-group-item-action")=planet.name
+
+        nav
+            ul(class="pagination justify-content-end")
+                li(class= previous ? 'page-item' : 'page-item disabled')
+                    a(class="page-link" href=previous ? "/planets?page="+ (currentPage-1) : "#" tabindex="-1" aria-disabled="true") Previous
+                li(class= next ? 'page-item' : 'page-item  disabled')
+                    a(class="page-link" href=href=next ? "/planets?page="+ (currentPage+1) : "#") Next
+
+        script(src='https://code.jquery.com/jquery-3.4.1.min.js')
+        script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.15.0/umd/popper.min.js')
+        script(src='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js')

@@ -1,0 +1,36 @@
+//- Task 14 (Handling complex data in JSON format). Point 1
+doctype html
+html
+    head
+        meta(charset='utf-8')
+        meta(name='viewport', content='width=device-width, initial-scale=1, shrink-to-fit=no')
+        link(href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', rel='stylesheet')
+        title Episode Details
+    body(class="p-4")
+        div(class="d-flex justify-content-between pb-3")
+            div
+                h1 Episode #{film.episode_id ? film.episode_id : 'Not found'}
+                h2 #{film.title ? film.title : 'Not found'}
+            a(href="/films")
+                button(class="btn btn-link") Back
+        
+        div(class="card")
+            div(class="card-body")
+                h5(class="card-title") Opening crawl
+                p(class="card-text") #{film.opening_crawl ? film.opening_crawl : 'Not found'}
+        
+        div(class="card mt-4")
+            div(class="card-body")
+                h5(class="card-title") Information
+                h6(class="card-subtitle mb-2 text-muted") Director
+                p(class="card-text") #{film.director ? film.director : 'Not found'}
+
+                h6(class="card-subtitle mb-2 text-muted") Producer
+                p(class="card-text") #{film.producer ? film.producer : 'Not found'}
+
+                h6(class="card-subtitle mb-2 text-muted") Release date
+                p(class="card-text") #{film.release_date ? film.release_date : 'Not found'}
+
+        script(src='https://code.jquery.com/jquery-3.4.1.min.js')
+        script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.15.0/umd/popper.min.js')
+        script(src='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js')
