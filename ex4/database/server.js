@@ -1,5 +1,4 @@
 // Run app.js from current folder
-const sqlite = require('sqlite3');
 const http = require("http");
 const url = require("url");
 
@@ -29,7 +28,7 @@ this.server = http.createServer(function (request, response) {
         // Based on the data contained in the form field, processes the contents of a file or directory
         case '/books':
             if (url_parts.query['id']) {
-                bookModule.getBook(url_parts.query['id'], response)
+                bookModule.getBook(url_parts.query['id'], response);
             } else {
                 bookModule.getAllBooks(response);
             }
@@ -50,9 +49,9 @@ this.server = http.createServer(function (request, response) {
         default:
             response.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
             response.write(`
-        <h2>Connected to Database</h2>
-        <a href="books">Books List</a>
-      `)
+                <h2>Connected to Database</h2>
+                <a href="books">Books List</a>
+            `)
             response.end();
             break;
     }
@@ -61,6 +60,7 @@ this.server = http.createServer(function (request, response) {
 
 module.exports.app = this.server;
 
+// We have separated 
 module.exports.listen = function () {
     this.server.listen.apply(this.server, arguments);
     console.log("The server was started on port " + arguments[0]);

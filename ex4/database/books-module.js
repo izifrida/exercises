@@ -15,27 +15,28 @@ function onError(response, err) {
 }
 
 // Check whether provided id exists
-function checkIDExist(id, response, next) {
+// Method returns Promise, so we can chain it in the chain of Promises
+function checkIDExist(id) {
     // We expect id as number
     if (isNaN(id)) {
-        onError(response, 'Invalid id')
+        return new Promise((resolve, reject) => {
+            throw new Error("Invalid id");
+        })
     }
 
-    Book.count({ where: { id: id } })
+    return Book.count({ where: { id: id } })
         .then(count => {
-            if (count != 0) {
-                next(id, response);
-            } else {
-                onError(response, 'Book not found')
+            if (count == 0) {
+                throw new Error('Book not found')
             }
         });
+
 };
 
 // Redirect to books list
 function redirectToList(response) {
     response.writeHead(302, { 'Location': 'http://localhost:8080/books' });
     response.end();
-    console.log('Redirect here');
 }
 
 // CRUD Methods to read and manipulate data
@@ -62,7 +63,6 @@ function createBook(request, response) {
                 redirectToList(response)
             })
             .error(err => {
-                console.log('Error here');
                 onError(response, err)
             });
     })
@@ -123,11 +123,11 @@ function getAllBooks(response) {
 
 // GET BY ID
 function getBook(id, response) {
-    checkIDExist(id, response, function (id, response) {
-        Book.findByPk(id)
-            .then(book => {
-                response.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
-                response.write(`
+    checkIDExist(id)
+        .then(() => Book.findByPk(id))
+        .then(book => {
+            response.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+            response.write(`
                 <h2>Edit Book</h2>  
                 <form method="post" action="/books/edit?id=${book.id}">
                     <label for="title">Title</label>
@@ -141,53 +141,55 @@ function getBook(id, response) {
                     <input type="reset">
                 </form>
             `);
-            })
-            .error(err => {
-                onError(response, err)
-            });
-    })
+
+            response.end();
+        })
+        .catch(err => {
+            console.log('Error');
+            onError(response, err)
+        });
 }
 // DELETE
 function deleteBook(id, response) {
-    checkIDExist(id, response, function (id, response) {
-        Book.destroy({
+    checkIDExist(id)
+        .then(() => Book.destroy({
             where: { id: id }
+        }))
+        .then(result => {
+            redirectToList(response)
         })
-            .then(result => {
-                redirectToList(response)
-            })
-            .error(err => {
-                onError(response, err)
-            });
-    })
+        .catch(err => {
+            onError(response, err)
+        });
 }
 
 // UPDATE
 function updateBook(id, request, response) {
-    checkIDExist(id, response, function (id, response) {
-        let body = '';
-        request.on('data', function (data) {
-            body += data
-        })
+    checkIDExist(id)
+        .then(() => {
+            let body = '';
+            request.on('data', function (data) {
+                body += data
+            })
 
-        request.on('end', function () {
-            // Parse body
-            const data = querystring.parse(body);
-            Book.update({
-                title: data.title,
-                author: data.author,
-                category: data.category
-            }, {
-                    where: { id: id }
-                })
-                .then(book => {
-                    redirectToList(response)
-                })
-                .error(err => {
-                    onError(response, err)
-                });
-        })
-    })
+            request.on('end', function () {
+                // Parse body
+                const data = querystring.parse(body);
+                Book.update({
+                    title: data.title,
+                    author: data.author,
+                    category: data.category
+                }, {
+                        where: { id: id }
+                    })
+                    .then(book => {
+                        redirectToList(response)
+                    })
+                    .error(err => {
+                        onError(response, err)
+                    });
+            })
+        });
 }
 
 module.exports.getAllBooks = getAllBooks;

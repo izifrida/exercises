@@ -1,5 +1,5 @@
-// Run test from database folder:
-// node ../../node_modules/mocha/bin/mocha test/test.js --timeout 10000 --exit
+// Run test being in 'database' folder:
+// mocha test
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const app = require('../server').app;
@@ -66,7 +66,6 @@ describe('App with database', function () {
                 .end(function (err, res) {
                     if (err) return done(err);
 
-                    res.should.have.status(302);
                     res.should.redirect;
                     done();
                 });
@@ -92,7 +91,7 @@ describe('App with database', function () {
     describe('Update book', function () {
         let bookId;
 
-        it('Should create book to be updated', function (done) {
+        it('Should create book in DB to be updated', function (done) {
             Book.create({
                 title: 'Harry Potter and the Philosopher\'s Stone',
                 author: 'J.K. Rowling',
@@ -111,9 +110,9 @@ describe('App with database', function () {
                     res.should.have.status(200);
                     res.should.to.be.html;
                     res.text.should.include('Edit Book');
-                    res.text.should.include(`name="title" value="${book.title}`);
-                    res.text.should.include(`name="author" value="${book.author}`);
-                    res.text.should.include(`name="category" value="${book.category}`);
+                    res.text.should.include(`name="title" value="Harry Potter and the Philosopher\'s Stone`);
+                    res.text.should.include(`name="author" value="J.K. Rowling`);
+                    res.text.should.include(`name="category" value="Fantasy`);
                     done();
                 });
         });
@@ -132,7 +131,6 @@ describe('App with database', function () {
                 .end(function (err, res) {
                     if (err) return done(err);
 
-                    res.should.have.status(302);
                     res.should.redirect;
                     done();
                 });
@@ -154,5 +152,91 @@ describe('App with database', function () {
         });
     });
 
+    describe('Delete book', function () {
+        let bookId;
+
+        it('Should create book in DB to be deleted', function (done) {
+            Book.create({
+                title: 'The Great Gatsby',
+                author: 'F. Scott Fitzgerald',
+                category: 'Classic'
+            }).then(function (book) {
+                bookId = book.id;
+                done();
+            });
+        });
+
+        it('Should have created book in table', function (done) {
+            chai.request(app).get('/books')
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.should.have.status(200);
+                    res.should.to.be.html;
+                    res.text.should.include('Books List');
+                    // Table must include inserted book
+                    res.text.should.include('The Great Gatsby')
+                    res.text.should.include('F. Scott Fitzgerald');
+                    res.text.should.include('Classic');
+                    done();
+                });
+        });
+
+        it('Should delete book by id', function (done) {
+            chai.request(app).delete('/books/delete?id=' + bookId)
+                .redirects(0)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.should.redirect;
+                    done();
+                });
+        });
+
+        it('Should not have deleted book in table', function (done) {
+            chai.request(app).get('/books')
+                .end(function (err, res) {
+                    if (err) done(err);
+                    res.should.have.status(200);
+                    res.should.to.be.html;
+                    res.text.should.include('Books List');
+                    // Table must include updated book
+                    res.text.should.not.include('The Great Gatsby')
+                    res.text.should.not.include('F. Scott Fitzgerald');
+                    res.text.should.not.include('Classic');
+                    done();
+                });
+        });
+    })
+
+    describe('Exceptions', function () {
+        it('Should return error if book id is invalid', function (done) {
+            chai.request(app).get('/books?id=InvalidId')
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.should.have.status(400);
+                    res.should.to.be.html;
+                    res.text.should.include('Error has occured');
+                    res.text.should.include('Error details');
+                    res.text.should.include(`Invalid id`);
+                    done();
+                });
+        });
+
+        it('Should return error if book id doesn\'t exist', function (done) {
+            chai.request(app).get('/books?id=100')
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.should.have.status(400);
+                    res.should.to.be.html;
+                    res.text.should.include('Error has occured');
+                    res.text.should.include('Error details');
+                    res.text.should.include(`Book not found`);
+                    done();
+                });
+        });
+    })
 });
 
