@@ -1,5 +1,5 @@
 /* To run test being in the '~/ex4' directory use the command 
-  node ../node_modules/mocha/bin/mocha test
+  node ./node_modules/mocha/bin/mocha test
 */
 
 var expect = require('chai').expect;

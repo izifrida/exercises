@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>
+        Form
+    </title>
+    <script>
+        /*****************************************************************/
+        /* Function that performs (asynchronous) query to the web server */
+        /*****************************************************************/
+
+        // AJAX + the GET method
+        function requestAJAX() {
+            // Create an object representing the request to the web server - see https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest
+            var xhr = new XMLHttpRequest();
+
+            // Registration of a (user) function that will process the response received from the server
+            xhr.onreadystatechange = () => response(xhr);
+
+            // Execution of the (asynchronous) query to the web server
+
+            // Task 15 point 10
+            const formValue = document.forms.getForm;
+            const nameValue = formValue.elements.name.value;
+            const query = '?name=' + encodeURIComponent(nameValue); // encode query string
+            // Added query to url string
+            xhr.open('GET', '/submit' + query, true);
+            // ****
+            xhr.send(null);
+            // Examples of the use of the above methods - see https://www.w3schools.com/xml/ajax_xmlhttprequest_send.asp
+        }
+
+        // AJAX + the POST method
+        // Task 15 point 11
+        function postAJAX() {
+            var xhr = new XMLHttpRequest();
+
+            xhr.onreadystatechange = () => response(xhr);
+
+            const formValue = document.forms.postForm;
+            const nameValue = formValue.elements.name.value;
+
+            const requestParam = 'name=' + encodeURIComponent(nameValue); // encode query string
+
+            xhr.open('POST', '/submit', true);
+            // Our server expect data as form
+            // send requestParam as application/x-www-form-urlencoded
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.send(requestParam);
+        }
+        // ****
+
+        /************************************************************/
+        /* The function that processes the response from the server */
+        /************************************************************/
+        function response(xhr) {
+            try {
+                if (xhr.readyState == XMLHttpRequest.DONE) { // If the response is ready
+                    if (xhr.status == 200) {                    // If requst was correct
+
+                        // If the data you receive is a plain text or a JSON document, use the following code
+                        var received_data = xhr.responseText; // Get a response in the form of a string
+                        window.alert(received_data);          // and display it
+
+                        // If the data you receive is an HTML or XML document, use the following code
+                        //var xmlDoc = xhr.responseXML; //Receive the answer in the form of object 'XmlDocument', which can be accessed using DOM methods - see https://www.w3.org/TR/domcore/
+                    }
+                    else
+                        window.alert('There was a problem with this request.');
+                }
+            }
+            catch (e) {
+                window.alert('Exception caught: ' + e.description);
+            }
+        }
+
+
+        /*****************************************************************/
+        /* Function that performs (asynchronous) query to the web server */
+        /*****************************************************************/
+        // Fetch API + the GET method
+        function requestFetchAPI() {
+            // Task 15 point 10
+            const formValue = document.forms.getForm;
+            const nameValue = formValue.elements.name.value;
+
+            const query = '?name=' + encodeURIComponent(nameValue); // encode query string
+
+            // Added query to url string
+            fetch('/submit' + query) // Execution of the (asynchronous) query to the web server - a promise is created
+                // *** 
+                .then(function (response) { // if the promise is fulfilled
+                    if (!response.ok) {
+                        throw Error(response.statusText);
+                    }
+                    window.alert(response.text()); // show the Promise object
+                })
+                .catch(function (error) { // if the promise is rejected
+                    window.alert('Looks like there was a problem: \n', error);
+                });
+        }
+
+
+        // Fetch API + the POST method
+        // Task 15 point 13
+        function postFetchAPI() {
+            const formValue = document.forms.postForm;
+            const nameValue = formValue.elements.name.value;
+
+            const query = 'name=' + encodeURIComponent(nameValue);
+
+            // Set options to send form value
+            fetch('/submit', {
+                method: 'post',
+                headers: {
+                    'Content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
+                },
+                body: query
+            })
+                .then(function (response) {
+                    if (!response.ok) {
+                        throw Error(response.statusText);
+                    }
+                    window.alert(response.text());
+                })
+                .catch(function (error) {
+                    window.alert('Looks like there was a problem: \n', error);
+                });
+        }
+
+    /***********************************************/
+    /* Same as above but using 'async' and 'await' */
+    /***********************************************/
+
+    /*
+        async function requestFetchAPI() {
+          try {
+            response = await fetch('/submit'); // Execution of the (asynchronous) query to the web server - a promise is created
+                                               // If the promise is fulfilled, then 'response' has a value
+            if (!response.ok) {
+              throw Error(response.statusText);
+            }
+          }
+          catch (error) { // if the promise is rejected
+            window.alert('Looks like there was a problem: \n', error);
+          }
+          window.alert(response.text()); //show the Promise object
+        }
+    */
+    </script>
+</head>
+
+<body>
+    <main>
+        <form name="getForm" method="get" action="/submit">
+            <label>Perform a query to the web server</label>
+            <!--Task 15 point 10  -->
+            <!-- Added a text field named 'name' -->
+            <input name="name" type="text">
+            <!-- *** -->
+            <input type="submit" value="Without using AJAX or Fetch API">
+            <input type="button" value="Using AJAX" onclick="requestAJAX()">
+            <input type="button" value="Using Fetch API" onclick="requestFetchAPI()">
+        </form>
+
+        <!--Task 15 point 11, 12, 13  -->
+        <!-- Post methods -->
+        <h4>POST method</h4>
+        <form name="postForm" method="post" action="/submit">
+            <label>Perform a query to the web server</label>
+            <input name="name" type="text">
+            <input type="submit" value="Without using AJAX or Fetch API">
+            <input type="button" value="Using AJAX" onclick="postAJAX()">
+            <input type="button" value="Using Fetch API" onclick="postFetchAPI()">
+        </form>
+        <!-- *** -->
+    </main>
+</body>
+
+</html>

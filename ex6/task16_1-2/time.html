@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>
+        Time
+    </title>
+    <script>
+        function printTime() {
+            const localDate = new Date();
+
+            const browserTimeElement = document.getElementById('browserTime');
+
+            browserTimeElement.textContent = localDate.toString().slice(0, 24)  // Slice to string like 'Wed Jan 08 2020 20:01:41'
+
+            requesServerTime();
+        }
+
+        function requestServerTime() {
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = () => response(xhr);
+            xhr.open('GET', '/time', true);
+            xhr.send(null);
+        }
+
+        function response(xhr) {
+            try {
+                if (xhr.readyState == XMLHttpRequest.DONE) {
+                    if (xhr.status == 200) {
+
+                        const received_data = xhr.responseText || "Remote time zone is 'UTC+2:00'";
+                        const serverTimeElement = document.getElementById('serverTime');
+
+                        serverTimeElement.textContent = received_data;
+                    }
+                    else
+                        window.alert('There was a problem with this request.');
+                }
+            }
+            catch (e) {
+                window.alert('Exception caught: ' + e.description);
+            }
+        }
+
+        setInterval(printTime, 1000);
+
+    </script>
+</head>
+
+<body>
+    <main>
+        <h4>Local date and time</h4>
+        <div id="browserTime"></div>
+        <h4>Remote date and time</h4>
+        <div id="serverTime"></div>
+    </main>
+</body>
+
+</html>

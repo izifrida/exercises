@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>
+        Form
+    </title>
+    <script>
+        function sendRequest(countForm) {
+            const form = document.forms.form;
+
+            const data_to_send = {
+                string: form.elements.string.value,
+                substring: form.elements.substring.value
+            }
+
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = () => response(xhr);
+            xhr.open('POST', '/count', true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(JSON.stringify(data_to_send));
+        }
+
+        function response(xhr) {
+            try {
+                if (xhr.readyState == XMLHttpRequest.DONE) {
+                    // Fill in form
+                    if (xhr.status == 200) {
+                        const received_data = JSON.parse(xhr.responseText);
+
+                        const el = document.getElementById('result');
+                        el.textContent = `Result: ${received_data.count}`
+                    }
+                    else
+                        window.alert('There was a problem with this request.');
+                }
+            }
+            catch (e) {
+                window.alert('Exception caught: ' + e.description);
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <main>
+        <h3>Count the occurrence of a substring in a string</h3>
+        <form name="form" id="countForm">
+            <label>String</label>
+            <br>
+            <textarea name="string" rows="4" cols="50">The quick brown fox jumps over the lazy dog</textarea>
+            <br>
+            <label>Substring</label>
+            <br>
+            <textarea name="substring" rows="4" cols="50">the</textarea>
+            <br>
+            <input type="button" value="Count" onclick="sendRequest()">
+        </form>
+        <div id="result"></div>
+    </main>
+</body>
+
+</html>
